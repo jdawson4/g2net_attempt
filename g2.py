@@ -13,6 +13,9 @@ train_path = data_files_path + "train/"
 test_path = data_files_path + "test/"
 train_dataset = tf.data.Dataset.list_files(train_path+"*.hdf5")
 
+def loss_fn():
+    return 1
+
 class GWaveDetector(keras.Model):
     def __init__(self, architecture, labels):
         super(GWaveDetector, self).__init__()
@@ -30,7 +33,8 @@ class GWaveDetector(keras.Model):
         # training here:
         with tf.GradientTape() as tape:
             with h5py.File(tf.as_string(data[0]), 'r') as f:
-                gen_output = self.architecture(data, training=True)
+                gen_output = self.architecture(data, training=True) # DATA IS NOT THE CORRECT INPUT
+            loss = loss_fn()
         grads = tape.gradient(loss, self.architecture.trainable_weights)
         self.optimizer.apply_gradients(
             zip(grads,self.architecture.trainable_weights)
